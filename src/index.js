@@ -2,9 +2,9 @@ const express = require("express");
 const client = require("prom-client");
 
 const app = express();
-const port = 9100; // Port que Prometheus va scraper
+const port = 9100; // port que prometheus va scraper
 
-// 📊 Crée un registre et quelques métriques
+// pour créer un registre et quelques métriques
 const register = new client.Registry();
 
 const httpRequestCounter = new client.Counter({
@@ -30,15 +30,14 @@ app.use((req, res, next) => {
 
 // Route test
 app.get("/", (req, res) => {
-  res.send("🎯 Service de métriques actif");
+  res.send("Service de métriques actif");
 });
 
-// Endpoint Prometheus
 app.get("/metrics", async (req, res) => {
   res.setHeader("Content-Type", register.contentType);
   res.send(await register.metrics());
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Metrics service listening on http://localhost:${port}/metrics`);
+  console.log(`Metrics service listening on http://localhost:${port}/metrics`);
 });
