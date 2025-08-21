@@ -1,0 +1,32 @@
+name: Metrics service CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # À activer si un linter est ajouté plus tard
+      # - name: Run ESLint
+      #   run: npm run lint
+
+      - name: Check build (runs app)
+        run: node index.js & sleep 2 && curl -f http://localhost:9100/metrics
