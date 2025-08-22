@@ -2,9 +2,10 @@ const express = require("express");
 const client = require("prom-client");
 
 const app = express();
-const port = 9100; // Port que Prometheus va scraper
+const helmet = require("helmet");
+const port = 9100; // port que prometheus va scraper
 
-// 📊 Crée un registre et quelques métriques
+// pour créer un registre et quelques métriques
 const register = new client.Registry();
 
 const httpRequestCounter = new client.Counter({
@@ -17,6 +18,7 @@ register.registerMetric(httpRequestCounter);
 client.collectDefaultMetrics({ register });
 
 // Middleware pour enregistrer les métriques
+app.use(helmet());
 app.use((req, res, next) => {
   res.on("finish", () => {
     httpRequestCounter.inc({
@@ -30,15 +32,26 @@ app.use((req, res, next) => {
 
 // Route test
 app.get("/", (req, res) => {
-  res.send("🎯 Service de métriques actif");
+  res.send("Service de métriques actif");
 });
 
-// Endpoint Prometheus
 app.get("/metrics", async (req, res) => {
   res.setHeader("Content-Type", register.contentType);
   res.send(await register.metrics());
 });
+// app.get("/metrics", async (req, res) => {
+//   const auth = req.headers.authorization;
+//   const expected = `Bearer ${process.env.METRICS_TOKEN}`;
+
+//   if (auth !== expected) {
+//     return res.status(403).send("Forbidden");
+//   }
+
+//   res.setHeader("Content-Type", register.contentType);
+//   res.send(await register.metrics());
+// });
+
 
 app.listen(port, () => {
-  console.log(`🚀 Metrics service listening on http://localhost:${port}/metrics`);
+  console.log(`Metrics service listening on http://localhost:${port}/metrics`);
 });
