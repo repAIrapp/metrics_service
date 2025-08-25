@@ -24,9 +24,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Ajoute un linter ici si nécessaire plus tard
-      # - name: Run ESLint
-      #   run: npm run lint
+      - name: Étape de build (non requise)
+        run: echo "Aucune étape de build requise pour ce microservice"
 
       - name: Check build (runs app and checks /metrics)
         run: |
